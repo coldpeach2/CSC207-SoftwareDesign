@@ -5,7 +5,15 @@
  * Write a void function invest that takes your money and multiplies it by the given rate.
  */
 
+void invest(double principal, double rate) {
 
+	    printf("Enter amount of Money and Rate you wish to invest: \n"); 
+	    scanf("%lf %lf", &principal, &rate);
+
+	    double product = principal * rate;
+
+	    printf("%.2f\n", product);
+	  }
 /*
  * NOTE: don't change the main function!
  * Sample usage:
@@ -19,8 +27,10 @@ int main(int argc, char **argv) {
     double rate = strtod(argv[2], NULL);
 
     // Call invest to make you more money
-    invest(&principal, rate);
+    invest(principal, rate);
 
     printf("%.2f\n", principal);
     return 0;
+
+
 }
