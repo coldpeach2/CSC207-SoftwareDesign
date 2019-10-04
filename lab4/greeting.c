@@ -37,7 +37,15 @@ int main(int argc, char **argv) {
     char greeting[20];
     char *name = argv[2];
 
-    // Your code goes here
+    //First copy the first argument to the array greeting. (Make sure it is
+    //properly null-terminated.)
+
+    strncpy(greeting, argv[1], sizeof(greeting));
+    greeting[strlen(greeting)] = '\0';
+
+
+    strcat(greeting, " ");
+    strncat(greeting, name, sizeof(greeting) - strlen(greeting) - 1);
 
 
     printf("%s\n", greeting);
