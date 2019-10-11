@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "bitmap.h"
-
+#define NUM_ELEMENTS 3
 
 /*
  * Read in the location of the pixel array, the image width, and the image 
@@ -9,6 +9,15 @@
  */
 void read_bitmap_metadata(FILE *image, int *pixel_array_offset, int *width, int *height) {
 
+
+	fseek(image, 10, SEEK_SET);
+	fread(pixel_array_offset, sizeof(int), NUM_ELEMENTS, image);
+
+	fseek(image, 18, SEEK_SET);
+	fread(width, sizeof(int), NUM_ELEMENTS, image);
+
+	fseek(image, 22, SEEK_SET);
+	fread(height, sizeof(int), NUM_ELEMENTS, image);
 }
 
 /*
@@ -29,8 +38,34 @@ void read_bitmap_metadata(FILE *image, int *pixel_array_offset, int *width, int 
  */
 struct pixel **read_pixel_array(FILE *image, int pixel_array_offset, int width, int height) {
 
-}
+    //struct pixel **data;
+    struct pixel **data = malloc(height * sizeof(struct pixel *));
 
+    for (int i = 0; i < height; i++){
+        data[i] = malloc((width * 3) * sizeof(struct pixel));
+    }
+
+    fseek(image, pixel_array_offset, SEEK_SET);
+
+
+    for (int i = 0; i < height; i++){
+        for (int x = 0; x < width*3; x=x+3){
+            unsigned char *b = NULL;
+            unsigned char *g = NULL;
+            unsigned char *r = NULL;
+
+            fread(b, sizeof(unsigned char), 1, image);
+            data[i][x].blue = (unsigned char)(*b);
+            fread(g, sizeof(unsigned char), 1, image);
+            data[i][x].green = (unsigned char)(*g);
+            fread(r, sizeof(unsigned char), 1, image);
+            data[i][x].red = (unsigned char)(*r);
+
+        }
+    }
+
+    return data;
+}
 
 /*
  * Print the blue, green, and red colour values of a pixel.
