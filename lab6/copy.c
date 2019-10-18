@@ -11,10 +11,24 @@
   The only function that should depend on string.h is memset.
  */
 
+/*   The stpncpy() and strncpy() functions copy at most len characters from
+     src into dst.  
+     If src is less than len characters long, the remainder of
+     dst is filled with `\0' characters.  Otherwise, dst is not terminated.*/
+
+
 char *copy(char *dest, const char *src, int capacity) {
+  if (dest == NULL){
+    return NULL;
+  }
+  for (int i = 0; i < capacity && src[i] != '\0'; i++){
+    dest[i] = src[i];
 
-
-    return dest;
+    for (; i < capacity; i++){
+      dest[i] = '\0';
+    }
+  }
+  return dest;
 }
 
 
