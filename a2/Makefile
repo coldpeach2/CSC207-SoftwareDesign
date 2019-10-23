@@ -7,6 +7,7 @@ all : simpletest
 # rules below.  The action line in this rule links the three object files to 
 # produce the executable file.
 
+
 simpletest : simpletest.o smalloc.o testhelpers.o
 	gcc -Wall -g -o simpletest simpletest.o smalloc.o testhelpers.o
 
@@ -21,6 +22,14 @@ smalloc.o : smalloc.c smalloc.h
 
 testhelpers.o : testhelpers.c smalloc.h
 	gcc -Wall -g -c testhelpers.c
+
+
+tests.o : mytest.c smalloc.h
+	gcc -Wall -g -o simpletest.c
+
+mytest : mytest.o smalloc.o testhelpers.o
+	gcc -Wall -g -o mytest mytest.o smalloc.o testhelpers.o
+
 
 # The clean target is a phony target because there is no file called clean
 # It is a handy rule to remove the executabel and object files. For example,
