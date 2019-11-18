@@ -17,13 +17,14 @@ int main(int argc, char **argv) {
         perror("fopen");
         exit(1);
     }
-
-    // TODO: complete this program according its description above.
-
-
-
-
-
+    int numbers[100];
+    //write 100 random integers to the file
+    /* from 0 to 99 and use that number as an index */
+    for (int i = 0; i < 99; ++i) {
+        numbers[i] = rand() % 100;
+        printf("%d\n", numbers[i]);
+        fwrite(numbers, sizeof(int), 100, fp);
+}
     fclose(fp);
     return 0;
 }
