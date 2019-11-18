@@ -18,11 +18,6 @@
    should be allocated and the return value will be NULL.
  */
 
-char **build_args(char *line) {
-    
-    // TODO
-    return NULL;
-}
 
 /* Return 1 if the line contains only spaces or a comment (#)
    Return 0 if the line contains any other character before a #
@@ -36,7 +31,7 @@ int is_comment_or_empty(char *line) {
         if(line[i] == '#') {
             return 1;
         }
-        if(line[i] != '\t' && line[i] != ' ') {
+        if(line[i] != '\t' && line[i] != ' ' && line[i] != '\n') {
             return 0;
         }
     }
