@@ -7,29 +7,6 @@
 #include <sys/stat.h>
 
 #include "pmake.h"
-/*run_make takes a target as its first argument. 
-It finds the rule in the rules data structure corresponding to the target, and evaluates it. 
-If target is NULL, then run_make will evaluate the first target in the rules list. A rule is evaluated in the following steps:
-
-1. Update each of the dependencies. In other words, recursively evaluate each dependency rule.
-	//Check to see if you need to execute the action based on the times of the dependencies and the target
-2. Compare the last modified time for each of the dependencies to the target.
-3. If the target does not exist, or at least one of the dependencies has a last modified time more recent than the target, execute the actions.
-Last modified time
-
-Use stat to get the last modified time (mtime) of a file. Read the man page to learn how to call stat. 
-The field of the stat struct that you want is called st_mtim on Linux. It has different names on Mac OSX, 
-so if you have a Mac, you will need to either work on the Linux machines or remember to change your code 
-when you do the final tests on the teach.cs machines. It may also be different on Windows Ubuntu, so you 
-should check. The struct timespec st_mtim has two fields, one for seconds (tv_sec) and one for nanoseconds 
-(tv_nsec). You will need both of these values to find out which time is more recent.
-
-Executing actions
-To execute an action, you will need to use fork and exec to the run the command specified by an action. 
-Fortunately in part 1, you already prepared the array of arguments to pass into exec. The parent process 
-should wait for each child to complete. If the child terminates with an error code (1), the parent should 
-also terminate. This means that the pmake will stop when it encounters an error. The actions for one 
-rule are not executed in parallel; they are executed one after another.*/
 
 int execute_action(char** command, int n) {
 /*Part 2 executing actions
