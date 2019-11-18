@@ -21,6 +21,7 @@
              provided, pmake will evaluate the first rule.
  */
 
+
 int main(int argc, char **argv) {
     FILE *fp;
     char *filename = "Makefile";
@@ -39,6 +40,7 @@ int main(int argc, char **argv) {
             break;
         case 'f':
             filename = optarg;
+            break;
         default: /* '?' */
             fprintf(stderr, "Usage: %s [-op][-f <filename>] [target]\n", argv[0]);
             exit(EXIT_FAILURE);
@@ -56,9 +58,7 @@ int main(int argc, char **argv) {
     if(output) {
         print_rules(rules);
     }
-
-    run_make(target, rules, parallel);
-    
+    run_make(target, rules, parallel);    
     fclose(fp);
 
     return 0;
