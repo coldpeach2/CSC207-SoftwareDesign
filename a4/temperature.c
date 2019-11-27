@@ -58,8 +58,6 @@ int main(int argc, char **argv) {
 	int msgno = 1;
 	// Suppress unuse variable messages.  The next two lines can be removed
 	// before submitting.
-	(void)msgno;
-	(void)cig_serialized;
 
 	while (1) {
 		int peerfd;	
@@ -73,8 +71,20 @@ int main(int argc, char **argv) {
 		 * the current state of the message, and read potentially new state
 		 * from the server.
 		 */
+		// first message
+		if(msgno == 1){
+			cig.hdr.type = HANDSHAKE;
+			cig.hdr.device_id = -1;
 
-		// TODOs
+		}else {
+			cig.hdr.type = UPDATE;
+
+		}
+		cig_serialized = serialize_cignal(cig);
+		write(peerfd, cig_serialized, CIGLEN);
+		read(peerfd, cig_serialized, CIGLEN);
+		unpack_cignal(cig_serialized, &cig);
+		read_temperature(&cig);
 
 		if (sleep(INTERVAL) >= 0) {
 			rawtime = time(NULL);
@@ -86,5 +96,6 @@ int main(int argc, char **argv) {
 					now->tm_sec, 
 					cig.value);
 		}
+		msgno++;
 	}
 }

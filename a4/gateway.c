@@ -31,6 +31,8 @@ int main(int argc, char *argv[]){
 	printf("\nThe Cignal Gateway is now started on port: %d\n\n", port);
 	int peerfd;
 	
+
+
 	/* TODO: Implement the body of the server.  
 	 *
 	 * Use select so that the server process never blocks on any call except
@@ -60,9 +62,56 @@ int main(int argc, char *argv[]){
 	(void)device_record;
 	(void)cig_serialized;
 
-
+	fd_set temp_fd;
+	fd_set all_set;
+	FD_ZERO(&all_set);
+	FD_SET(gatewayfd, &all_set);
+	int max_fd;
+	max_fd = gatewayfd;
 	while(1) {
+		temp_fd = all_set;
+		struct timeval timeout;
+		timeout.tv_sec = 5;
+	    timeout.tv_usec = 0;
+		int nready = select(max_fd + 1, &temp_fd, NULL, NULL, &timeout);
+		if (nready == -1) {
+			perror("select");
+	        continue;
+		}
+		else if(nready == 0){
+			printf("Waiting for Sensors update...\n");
+		}
+		else{
+			// add new connected devicce
+			if(FD_ISSET(gatewayfd, &temp_fd) ){
+				int peerfd = accept_connection(gatewayfd);
+				FD_SET(peerfd, &temp_fd);
+				max_fd = MAXFD(max_fd, peerfd);
+
+			}
+
+			char* msg = malloc(sizeof(char)*CIGLEN);
+			// this is to read from all existing file descriptors
+			for(int i = 0; i < max_fd +1; i++) {
+				if(FD_ISSET(i, &temp_fd)) {
+					int r = read(i, msg, CIGLEN);
+					if (r > 0) {
+						unpack_cignal(msg, &cig);
+						cig_serialized = serialize_cignal(cig);
+						int dev_id = process_message(&cig, device_record);
+						cig.hdr.device_id = dev_id;
+						cig_serialized = serialize_cignal(cig);
+						write(i, cig_serialized, CIGLEN);
+						close(i);
+					}
+
+
+				}
+			}
+		}
+
 
 	}
 	return 0;
+
 }

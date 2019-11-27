@@ -69,9 +69,56 @@ void adjust_fan(struct cignal *cig) {
  */
 
 int process_message(struct cignal *cig, int *device_record) {
-    
-    // TODO
-    
-    fprintf(stderr, "Received corrupted cignal! The message is discarded...\n");
-    return -1;
+    float value; //Contains the value for the Sensors read. (Format: AB.WXYZ)
+    // invalid types return -1
+    if (cig->cooler != ON && cig->cooler != OFF){
+        fprintf(stderr, "Received corrupted cignal! Cooler is not on or off! The message is discarded...\n");
+        return -1;
+
+    }
+    if (cig->dehumid != ON && cig->dehumid != OFF){
+        fprintf(stderr, "Received corrupted cignal! Dehumid is not on or off! The message is discarded...\n");
+        return -1;
+    }
+    struct header head = cig->hdr;
+    if(head.device_type != TEMPERATURE && head.device_type != HUMIDITY){
+        fprintf(stderr, "Received corrupted cignal! Device type is not temperate or humidity! The message is discarded...\n");
+        return -1;
+    }
+    if(!is_valid_type(cig)){
+        fprintf(stderr, "Received corrupted cignal! Invalid cig type! The message is discarded...\n");
+        return -1;
+    }
+
+    if(!((head.type == HANDSHAKE && head.device_id == -1) || (head.type == UPDATE && head.device_id >= 11 && head.device_id < 100))){
+        fprintf(stderr, "Received corrupted cignal! Invalid device id! The message is discarded...\n");
+        return -1;
+    }
+    value = cig->value;
+    // new device requesting to be added
+    if(head.type == HANDSHAKE){
+        int device_id = register_device(device_record);
+        printf("Register device! %d\n", device_id);
+        head.device_id = device_id;
+        return device_id;
+    }else{
+        // old device and check if its been previously registered
+        int registered = is_registered(head.device_id, device_record);
+        if (registered == -1){
+            fprintf(stderr, "Received corrupted cignal! Device id not registered! The message is discarded...\n");
+            return -1;
+        }
+    }
+    if(head.device_type == TEMPERATURE){
+        printf("Temperature: %.4f --> Device_ID: %d\n", value, head.device_id);
+    }
+    else if(head.device_type == HUMIDITY){
+        printf("Humidity: %.4f --> Device_ID: %d\n", value, head.device_id);
+    }
+    // adjust fan based on status update
+    adjust_fan(cig);
+    printf("********************END EVENT********************\n\n");
+    return head.device_id;
+    // fprintf(stderr, "Received corrupted cignal! The message is discarded...\n");
 }
+
