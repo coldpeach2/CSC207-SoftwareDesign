@@ -59,10 +59,30 @@ int read_from(int client_index, struct sockname *usernames) {
     char buf[BUF_SIZE + 1];
 
     int num_read = read(fd, &buf, BUF_SIZE);
-    buf[num_read] = '\0'; 
-    if (num_read == 0 || write(fd, buf, strlen(buf)) != strlen(buf)) {
-        usernames[client_index].sock_fd = -1;
-        return fd;
+    buf[num_read] = '\0';
+
+
+    if (usernames[client_index].username == NULL) {
+        usernames[client_index].username = malloc(sizeof(char)* BUF_SIZE);
+        strncpy(usernames[client_index].username, buf, num_read);
+        usernames[client_index].username[num_read+1] = '\0';
+
+    }else {
+        char new_buffer[BUF_SIZE + 1];
+        strncat(new_buffer,"Username: ", BUF_SIZE);
+        strncat(new_buffer, usernames[client_index].username, BUF_SIZE);
+       /* char temp[BUF_SIZE + 1];
+        strncpy(temp, usernames[client_index].username, strlen(usernames[client_index].username) + 1);
+        strncat(temp, ": ", 2);
+        strncat(temp, buf, BUF_SIZE + 2 - strlen(temp));
+        temp[strlen(temp) + 1] = '\0';*/
+        while(num_read > 0 || write(fd, new_buffer, strlen(new_buffer)) == strlen(new_buffer)){
+            write(fd, new_buffer, strlen(new_buffer));
+            if (num_read == 0 || write(fd, new_buffer, strlen(new_buffer)) != strlen(new_buffer)) {
+                usernames[client_index].sock_fd = -1;
+                      
+            }
+        }  return fd;
     }
 
     return 0;
@@ -126,6 +146,8 @@ int main(void) {
         // Is it the original socket? Create a new connection ...
         if (FD_ISSET(sock_fd, &listen_fds)) {
             int client_fd = accept_connection(sock_fd, usernames);
+            // new client's file descriptor is created/returned for communication with the client. The initial socket descriptor is used
+            // to accept connections, but the new socket is used to communicate
             if (client_fd > max_fd) {
                 max_fd = client_fd;
             }

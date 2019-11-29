@@ -8,7 +8,7 @@
 
 
 #ifndef PORT
-  #define PORT 30000
+  #define PORT 54971
 #endif
 #define BUF_SIZE 128
 
