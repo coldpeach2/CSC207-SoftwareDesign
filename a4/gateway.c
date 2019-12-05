@@ -56,11 +56,7 @@ int main(int argc, char *argv[]){
 
 	// Suppress unused variable warning.  The next 5 ilnes can be removed 
 	// after the variables are used.
-	(void)gatewayfd;
-	(void)peerfd;
-	(void)cig;
-	(void)device_record;
-	(void)cig_serialized;
+
 
 	fd_set temp_fd;
 	fd_set all_set;
@@ -84,7 +80,7 @@ int main(int argc, char *argv[]){
 		else{
 			// add new connected devicce
 			if(FD_ISSET(gatewayfd, &temp_fd) ){
-				int peerfd = accept_connection(gatewayfd);
+				peerfd = accept_connection(gatewayfd);
 				FD_SET(peerfd, &temp_fd);
 				max_fd = MAXFD(max_fd, peerfd);
 
@@ -98,14 +94,20 @@ int main(int argc, char *argv[]){
 					if (r > 0) {
 						unpack_cignal(msg, &cig);
 						cig_serialized = serialize_cignal(cig);
+						printf("RAW MESSAGE: %s\n", cig_serialized);
 						int dev_id = process_message(&cig, device_record);
 						cig.hdr.device_id = dev_id;
 						cig_serialized = serialize_cignal(cig);
-						write(i, cig_serialized, CIGLEN);
-						close(i);
-					}
 
-
+						if (write(i, cig_serialized, CIGLEN) == -1){
+							perror("write");
+						}
+						if (close(i) == -1){
+							perror("close");
+						} 
+				}else {
+				perror("read");
+				exit(1);
 				}
 			}
 		}

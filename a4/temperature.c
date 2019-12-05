@@ -81,8 +81,14 @@ int main(int argc, char **argv) {
 
 		}
 		cig_serialized = serialize_cignal(cig);
-		write(peerfd, cig_serialized, CIGLEN);
-		read(peerfd, cig_serialized, CIGLEN);
+		if (write(peerfd, cig_serialized, CIGLEN) == -1) {
+			perror("write");
+			exit(1);
+		}
+		if (read(peerfd, cig_serialized, CIGLEN) == -1) {
+			perror("read");
+			exit(1);
+		}
 		unpack_cignal(cig_serialized, &cig);
 		read_temperature(&cig);
 
