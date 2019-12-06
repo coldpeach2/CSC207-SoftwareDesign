@@ -72,13 +72,13 @@ int main(int argc, char *argv[]){
 		int nready = select(max_fd + 1, &temp_fd, NULL, NULL, &timeout);
 		if (nready == -1) {
 			perror("select");
-	        continue;
+	        exit(1);
 		}
 		else if(nready == 0){
 			printf("Waiting for Sensors update...\n");
 		}
 		else{
-			// add new connected devicce
+			// add new connected device
 			if(FD_ISSET(gatewayfd, &temp_fd) ){
 				peerfd = accept_connection(gatewayfd);
 				FD_SET(peerfd, &temp_fd);
@@ -92,16 +92,19 @@ int main(int argc, char *argv[]){
 				if(FD_ISSET(i, &temp_fd)) {
 					int r = read(i, msg, CIGLEN);
 					if (r > 0) {
+						//unpack and serialize cig
 						unpack_cignal(msg, &cig);
 						cig_serialized = serialize_cignal(cig);
 						printf("RAW MESSAGE: %s\n", cig_serialized);
+						//process message
 						int dev_id = process_message(&cig, device_record);
 						cig.hdr.device_id = dev_id;
 						cig_serialized = serialize_cignal(cig);
-
+						//write to connection
 						if (write(i, cig_serialized, CIGLEN) == -1){
 							perror("write");
-						}
+							exit(1);
+						} //close connection
 						if (close(i) == -1){
 							perror("close");
 						} 

@@ -71,25 +71,26 @@ void adjust_fan(struct cignal *cig) {
 int process_message(struct cignal *cig, int *device_record) {
     float value; //Contains the value for the Sensors read. (Format: AB.WXYZ)
     // invalid types return -1
+        // checking cooler
     if (cig->cooler != ON && cig->cooler != OFF){
         fprintf(stderr, "Received corrupted cignal! Cooler is not on or off!\n");
         return -1;
 
-    }
+    }  // checking dehumid
     if (cig->dehumid != ON && cig->dehumid != OFF){
         fprintf(stderr, "Received corrupted cignal! Dehumid is not on or off! \n");
         return -1;
-    }
+    } // checking valid device type
     struct header head = cig->hdr;
     if(head.device_type != TEMPERATURE && head.device_type != HUMIDITY){
         fprintf(stderr, "Received corrupted cignal! Device type is not temperate or humidity!\n");
         return -1;
-    }
+    } // checking valid cig type
     if(!is_valid_type(cig)){
         fprintf(stderr, "Received corrupted cignal! Invalid cig type! \n");
         return -1;
     }
-
+    // checking valid device id
     if(!((head.type == HANDSHAKE && head.device_id == -1) || (head.type == UPDATE && head.device_id >= 11 && head.device_id < 100))){
         fprintf(stderr, "Received corrupted cignal! Invalid device id!\n");
         return -1;
@@ -119,6 +120,5 @@ int process_message(struct cignal *cig, int *device_record) {
     adjust_fan(cig);
     printf("********************END EVENT********************\n\n");
     return head.device_id;
-    // fprintf(stderr, "Received corrupted cignal! The message is discarded...\n");
 }
 
