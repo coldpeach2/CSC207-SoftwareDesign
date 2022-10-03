@@ -24,9 +24,68 @@ int main(void) {
    creates a new process to run the validate program, sends it the user id and password, 
    and prints a message to stdout reporting whether the validation is successful.
 
-The user will type in a user name on one line followed by a password 
+  The user will type in a user name on one line followed by a password 
      on the next.*/
 
+if (fgets(user_id, MAXLINE, stdin) == NULL) {
+  perror("fgets");
+  exit(1);
+}
+
+if (fgets(password, MAXLINE, stdin) == NULL) {
+  perror("fgets");
+  exit(1);
+}
+
+// create pipe
+int fd[2], r;
+
+if ((pipe(fd)) == -1) {
+  perror("pipe");
+  exit(1);
+}
+
+int r = fork();
+  if (r < 0) {
+    perror("fork");
+    exit(1);   
+  } 
+  // now focus on the child
+else if (r == 0) {
+  //redirect stdoutput using dup2
+  //Reset stdin so it reads from the pipe
+  //Here we connect stdin to the read end of the pipe, 
+  //so that when the process reads from stdin the data comes from the pipe
+  // close write on child
+  close(fd[1]);
+  if (dup2(fd[0], fileno(stdin)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
   if(fgets(user_id, MAXLINE, stdin) == NULL) {
       perror("fgets");
       exit(1);
@@ -89,5 +148,5 @@ else if (r == 0) {
     }
     
 return 0;
-
+*/
 }

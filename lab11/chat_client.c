@@ -36,6 +36,12 @@ int main(void) {
         close(sock_fd);
         exit(1);
     }
+    int client_fd = accept(fd, NULL, NULL);
+    if (client_fd < 0) {
+        perror("server: accept");
+        close(fd);
+        exit(1);
+
 
 	// Get the user to provide a name.
     char buf[2 * BUF_SIZE + 1];            // 2x to allow for usernames

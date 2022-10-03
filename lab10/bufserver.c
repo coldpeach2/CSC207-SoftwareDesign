@@ -38,6 +38,11 @@ int main() {
         int nbytes;
         while ((nbytes = read(fd, after, room)) > 0) {
             // Step 1: update inbuf (how many bytes were just added?)
+            inbuf += nbytes;
+            room = room - inbuf;
+            // at index 10
+            buf[nbytes] = 
+            
 
 
             int where;
@@ -90,5 +95,7 @@ int main() {
  * Definitely do not use strchr or other string functions to search here. (Why not?)
  */
 int find_network_newline(const char *buf, int n) {
+    int found = 0;
+    while()
     return -1;
 }

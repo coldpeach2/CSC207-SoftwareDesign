@@ -32,11 +32,6 @@ if I have two rules to evaluate this means I create a child for each rule to exe
 }
 
 void execute_actions(Action *act) {
-/*Part 2 executing actions
-if I have two rules to evaluate this means I create a child for each rule to execute the action for that specific rule.
- And I should wait for these two child processes to execute before the parent process does anything else.
-
-*/
 	Action *curr = act;
 	int i= 0;
 	while(curr != NULL){
